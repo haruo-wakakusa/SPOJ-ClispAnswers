@@ -18,21 +18,29 @@
     (draw size #\\ (+ i-start (1- (* 2 size))) -1 (+ j-start (1- size)) -1)
   ))
 
-(defun print-pattern (row col size)
-  (let* ((aryrow (* row size 2)) (arycol (* col size 2))
-         (ary (make-array (list aryrow arycol))))
+(defun print-pattern (row col size ary)
+  (let* ((aryrow (* size 2)) (arycol (* col size 2)))
     (dotimes (i aryrow) (dotimes (j arycol) (setf (aref ary i j) #\.)))
-    (write-diamond 0 0 size ary)
-    (loop for i from 0 below aryrow by (* 2 size) do
-      (loop for j from 0 below arycol by (* 2 size) do
-        (write-diamond i j size ary)))
-    (dotimes (i aryrow)
-      (dotimes (j arycol) (write-char (aref ary i j)))
-      (write-char #\Newline))))
+    (loop for j from 0 below arycol by (* 2 size) do
+      (write-diamond 0 j size ary))
+    (dotimes (i row)
+      (dotimes (j aryrow)
+        (dotimes (k arycol) (write-char (aref ary j k)))
+          (write-char #\Newline)))))
 
 (defvar *t* (read))
+(defvar *tests* (loop for i below *t* collect (list (read) (read) (read))))
+(defvar *maxrowsize* 0)
+(defvar *maxcolsize* 0)
+(dolist (test *tests*)
+  (setf *maxrowsize* (max *maxrowsize* (* (third test) 2)))
+  (setf *maxcolsize* (max *maxcolsize* (* (second test) (third test) 2))))
+(defvar *ary* (make-array (list *maxrowsize* *maxcolsize*)))
+
 (dotimes (i (1- *t*))
-  (print-pattern (read) (read) (read))
+  (let ((test (nth i *tests*)))
+    (print-pattern (first test) (second test) (third test) *ary*))
   (write-char #\Newline))
-(print-pattern (read) (read) (read))
+(let ((test (nth (1- *t*) *tests*)))
+  (print-pattern (first test) (second test) (third test) *ary*))
 
