@@ -1,46 +1,33 @@
 ; CPTTRN7 - Character Patterns (Act 7)
 ; http://www.spoj.com/problems/CPTTRN7/
 
-;
-;  !! TIME OVER CODE !!
-;
+(defconstant *array-max-size* 128)
+(defvar *ary* (make-array (list *array-max-size*)))
 
-(macrolet (
-      (draw (len char i-start i-step j-start j-step)
-        `(do ((k 0 (1+ k)) (i ,i-start (+ i ,i-step))
-                           (j ,j-start (+ j ,j-step)))
-             ((>= k size))
-          (setf (aref ary i j) ,char))))
-  (defun write-diamond (i-start j-start size ary)
-    (draw size #\/ (+ i-start (1- size)) -1 j-start 1)
-    (draw size #\\ i-start 1 (+ j-start size) 1)
-    (draw size #\/ (+ i-start size) 1 (+ j-start (1- (* 2 size))) -1)
-    (draw size #\\ (+ i-start (1- (* 2 size))) -1 (+ j-start (1- size)) -1)
-  ))
+(defun write-diamond-slice (row size)
+  (dotimes (i (* 2 size)) (setf (aref *ary* i) #\.))
+  (setf (aref *ary* (mod (- size 1 row) (* 2 size))) #\/)
+  (setf (aref *ary* (mod (+ size row) (* 2 size))) #\\))
 
-(defun print-pattern (row col size ary)
-  (let* ((aryrow (* size 2)) (arycol (* col size 2)))
-    (dotimes (i aryrow) (dotimes (j arycol) (setf (aref ary i j) #\.)))
-    (loop for j from 0 below arycol by (* 2 size) do
-      (write-diamond 0 j size ary))
-    (dotimes (i row)
-      (dotimes (j aryrow)
-        (dotimes (k arycol) (write-char (aref ary j k)))
-          (write-char #\Newline)))))
+(defun copy-diamond-slice (col size)
+  (let ((end (* col size 2)))
+    (do ((i 0 (1+ i)) (j (* 2 size) (1+ j))) ((>= j end))
+      (setf (aref *ary* j) (aref *ary* i)))))
+
+(defun print-diamond-line (col size)
+  (dotimes (i (* 2 size))
+    (write-diamond-slice i size)
+    (copy-diamond-slice col size)
+    (write-sequence *ary* *standard-output* :end (* col size 2))
+    (write-char #\Newline)))
+
+(defun print-diamond (row col size)
+  (dotimes (i row) (print-diamond-line col size)))
 
 (defvar *t* (read))
-(defvar *tests* (loop for i below *t* collect (list (read) (read) (read))))
-(defvar *maxrowsize* 0)
-(defvar *maxcolsize* 0)
-(dolist (test *tests*)
-  (setf *maxrowsize* (max *maxrowsize* (* (third test) 2)))
-  (setf *maxcolsize* (max *maxcolsize* (* (second test) (third test) 2))))
-(defvar *ary* (make-array (list *maxrowsize* *maxcolsize*)))
-
 (dotimes (i (1- *t*))
-  (let ((test (nth i *tests*)))
-    (print-pattern (first test) (second test) (third test) *ary*))
+  (print-diamond (read) (read) (read))
   (write-char #\Newline))
-(let ((test (nth (1- *t*) *tests*)))
-  (print-pattern (first test) (second test) (third test) *ary*))
+(print-diamond (read) (read) (read))
+
 
