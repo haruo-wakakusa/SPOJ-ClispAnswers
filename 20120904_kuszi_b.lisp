@@ -2,16 +2,16 @@
 ; http://www.spoj.com/problems/CPTTRN7/
 
 ;
-; !! TIME OVER CODE !!
+;  !! TIME OVER CODE !!
 ;
 
-(defun write-diamond (i-start j-start size ary)
-  (macrolet (
-        (draw (len char i-start i-step j-start j-step)
-          `(do ((k 0 (1+ k)) (i ,i-start (+ i ,i-step))
-                             (j ,j-start (+ j ,j-step)))
-               ((>= k size))
-            (setf (aref ary i j) ,char))))
+(macrolet (
+      (draw (len char i-start i-step j-start j-step)
+        `(do ((k 0 (1+ k)) (i ,i-start (+ i ,i-step))
+                           (j ,j-start (+ j ,j-step)))
+             ((>= k size))
+          (setf (aref ary i j) ,char))))
+  (defun write-diamond (i-start j-start size ary)
     (draw size #\/ (+ i-start (1- size)) -1 j-start 1)
     (draw size #\\ i-start 1 (+ j-start size) 1)
     (draw size #\/ (+ i-start size) 1 (+ j-start (1- (* 2 size))) -1)
