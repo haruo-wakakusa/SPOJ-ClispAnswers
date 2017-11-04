@@ -1,12 +1,4 @@
-mv ./20040509_adrian.li ./20040509_adrian.lisp
-mv ./20120822_kuszi.li ./20120822_kuszi.lisp
-mv ./20120901_kuszi.li ./20120901_kuszi.lisp
-mv ./20120903_kuszi.li ./20120903_kuszi.lisp
-mv ./20120903_kuszi_b.li ./20120903_kuszi_b.lisp
-mv ./20120903_kuszi_c.li ./20120903_kuszi_c.lisp
-mv ./20120903_kuszi_d.li ./20120903_kuszi_d.lisp
-mv ./20120903_kuszi_e.li ./20120903_kuszi_e.lisp
-mv ./20120904_kuszi.li ./20120904_kuszi.lisp
-mv ./20140501_AdamDzedzej.li ./20140501_AdamDzedzej.lisp
-mv ./20140501_mima.li ./20140501_mima.lisp
-mv ./sqrt.li ./sqrt.lisp
+3
+3 1 2 
+4 4 1 
+2 5 2
