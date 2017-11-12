@@ -1,3 +1,6 @@
+; SMPSEQ5 - Fun with Sequences (Act 3)
+; http://www.spoj.com/problems/SMPSEQ5/
+
 (defvar *n* (read))
 (defvar *s* (loop for i below *n* collect (read)))
 (defvar *m* (read))
