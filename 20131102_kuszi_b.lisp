@@ -34,18 +34,24 @@
       (when (eq (car rot) dir) (return (cadr rot)))
       (setf rot (cdr rot))))))
 
+; make-debug-array
+(defun mdary (row col)
+  (let ((res (make-array (list row col))))
+    (dotimes (i row)
+      (let ((str (read-line *standard-input*)))
+        (dotimes (j col)
+          (when (< j (length str)) (setf (aref res i j) (char str j))))))
+    res))
+
 (defconstant +4-neighbor+
   (list (make-pt :x 1 :y 0) (make-pt :x 0 :y 1)
         (make-pt :x -1 :y 0) (make-pt :x 0 :y -1)))
 
 (defun in-contact-p (ary pt char)
   (let* ((neighbor (mapcar (lambda (delta) (pt+ pt delta)) +4-neighbor+))
-         ;(val (mapcar (lambda (pt) (pt-ref ary pt)) neighbor))
-         ;(is-same (mapcar (lambda (val) (if (char= val char) 1 0))) val)
-        )
-    ;(> (apply #'+ is-same) 2)
-    neighbor
-  ))
+         (val (mapcar (lambda (pt) (pt-ref ary pt)) neighbor))
+         (is-same (mapcar (lambda (val) (if (char= val char) 1 0)) val)))
+    (> (apply #'+ is-same) 2)))
 
 (defconstant +clockwise+
   #( (make-pt :x -1 :y -1) (make-pt :x 0 :y -1)
