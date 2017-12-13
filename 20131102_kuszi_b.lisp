@@ -1,7 +1,7 @@
 ; SPTTRN3 - Straight Line Spiral Pattern (Act 3)
 ; http://www.spoj.com/problems/SPTTRN3/
 
-; this is not completed
+; this is not completed.
 
 (defstruct pt (x 0) (y 0))
 
@@ -16,21 +16,16 @@
 (defconstant +r1+ (make-pt :x 1 :y 0)) ; right
 (defconstant +r2+ (make-pt :x 1 :y 0))
 (defconstant +r3+ (make-pt :x 1 :y 0))
-(defconstant +r4+ (make-pt :x 1 :y 0))
 (defconstant +d1+ (make-pt :x 0 :y 1)) ; down
 (defconstant +d2+ (make-pt :x 0 :y 1))
 (defconstant +d3+ (make-pt :x 0 :y 1))
-(defconstant +d4+ (make-pt :x 0 :y 1))
 (defconstant +l1+ (make-pt :x -1 :y 0)) ; left
 (defconstant +l2+ (make-pt :x -1 :y 0))
-(defconstant +l3+ (make-pt :x -1 :y 0))
 (defconstant +u1+ (make-pt :x 0 :y -1)) ; up
 (defconstant +u2+ (make-pt :x 0 :y -1))
-(defconstant +u3+ (make-pt :x 0 :y -1))
 
 (defconstant +rotation+
-  (list +r1+ +d1+ +l1+ +u1+ +r2+ +d2+ +r3+ +u2+ +l2+
-        +d3+ +r4+ +d4+ +l3+ +u3+ +r1+))
+  (list +r1+ +d1+ +l1+ +u1+ +r2+ +d2+ +r3+ +u2+ +l2+ +d3+ +r1+))
 
 (defun get-next-direction (dir)
   (let ((rot +rotation+))
