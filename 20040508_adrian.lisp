@@ -1,29 +1,27 @@
 ; ARITH - Simple Arithmetics
 ; https://www.spoj.com/problems/ARITH/
 
-; this code has bug.
-
 (defun divide (str)
   (let ((pos (or (position #\+ str) (position #\- str) (position #\* str))))
     (list (substring str 0 pos)
           (substring str pos (1+ pos))
           (substring str (1+ pos) (length str)))))
 
-(defun format* (str len right)
-  (format t "~a~a~a~%"
-    (make-string (- len (length str) right) :initial-element #\Space)
-    str
-    (make-string right :initial-element #\Space)))
+(defun format* (str len)
+  (format t "~a~a~%"
+    (make-string (- len (length str)) :initial-element #\Space)
+    (string-right-trim '(#\Space) str)))
 
 (defun print+ (arg1 arg2 op op-str)
   (let* ((res (format nil "~a" (funcall op (parse-integer arg1)
                                            (parse-integer arg2))))
          (+arg2 (concatenate 'string op-str arg2))
          (cols (max (length arg1) (length +arg2) (length res))))
-  (format* arg1 cols 0)
-  (format* +arg2 cols 0)
-  (format t "~a~%" (make-string cols :initial-element #\-))
-  (format* res cols 0)))
+  (format* arg1 cols)
+  (format* +arg2 cols)
+  (format* (make-string (max (length +arg2) (length res)) :initial-element #\-)
+           cols)
+  (format* res cols)))
 
 (defmacro -> (init &rest forms)
   (let ((forms! (loop for form in forms collect `(setq $ ,form))))
@@ -57,15 +55,16 @@
                       (mapcar #'length $)
                       (apply #'max $)))
          (max (max (length arg1) (length *arg2) tmp-max (length res))))
-    (format* arg1 max 0)
-    (format* *arg2 max 0)
-    (format* (make-string (max (length arg1) (length *arg2))
+    (format* arg1 max)
+    (format* *arg2 max)
+    (format* (make-string (max (length *arg2) (length (first temporary-exps)))
                           :initial-element #\-)
-             max 0)
-    (dolist (exp temporary-exps) (format* exp max 0))
+             max)
+    (dolist (exp temporary-exps) (format* exp max))
     (unless (= (length temporary-exps) 1)
-      (format t "~a~%" (make-string max :initial-element #\-))
-      (format* res max 0))))
+      (format* (make-string (max tmp-max (length res)) :initial-element #\-)
+               max)
+      (format* res max))))
 
 (defvar *t* (parse-integer (read-line)))
 (dotimes (i *t*)
