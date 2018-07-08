@@ -23,6 +23,12 @@
   (format t "~a~%" (make-string cols :initial-element #\-))
   (format* res cols 0)))
 
-(defun print* (arg1 arg2)
-  (let* ((res (format nil "~a" (* (read-from-string arg1)
-                                  (read-from-string arg2)))
+(defun get-mult-series (arg1 arg2 n1 n2)
+  (map 'list (lambda (c)
+
+;(defun print* (arg1 arg2)
+;  (let* ((n1 (parse-integer arg1))
+;         (n2 (parse-integer arg2))
+;         (res (format nil "~a" (* n1 n2)))
+;         (+arg2 (format nil "*~a" arg2))
+;         (
