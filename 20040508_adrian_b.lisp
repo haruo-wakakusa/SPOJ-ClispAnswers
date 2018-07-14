@@ -1,8 +1,6 @@
 ; BULK - The Bulk!
 ; https://www.spoj.com/problems/BULK/
 
-; this code is not accepted in CLISP but SBCL.
-
 (defmacro block* (&rest forms)
   (let ((vars nil) (funs nil))
     (dolist (form forms)
@@ -72,7 +70,7 @@
   (let ((planes (get-planes-including-yz-grid-in planes//yz-plane grid)))
     (unless (evenp (length planes))
       (error "error in get-x-depth-for-yz-grid"))
-    (sort planes (lambda (p1 p2) (< (caar p1) (caar p2))))
+    (setq planes (sort planes (lambda (p1 p2) (< (caar p1) (caar p2)))))
     (do* ((rest planes (cddr rest)) (res 0))
          ((null rest) res)
       (incf res (- (caar (second rest)) (caar (first rest)))))))
