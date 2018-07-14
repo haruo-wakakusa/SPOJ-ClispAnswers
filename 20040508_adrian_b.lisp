@@ -79,44 +79,52 @@
 (defun solve-testcase (planes)
   (block*
 
+    (format t "~%MAKING POINTS...~%")
     (var points
-      (apply #'append planes))
+      (time (apply #'append planes)))
     ;(format t "points = ~a~%" points)
 
     (fun is-x-constant (plane)
       (every (lambda (p1 p2) (= (first p1) (first p2))) plane (rest plane)))
 
+    (format t "~%MAKING PLANES//YZ-PLANE...~%")
     (var planes//yz-plane
-      (remove-if-not #'is-x-constant planes))
+      (time (remove-if-not #'is-x-constant planes)))
     ;(format t "planes//yz-plane = ~a~%" planes//yz-plane)
 
     (fun points->ranges (points)
       (mapcar #'list points (rest points)))
 
+    (format t "~%MAKING Y-GRID...~%")
     (var y-grid
+      (time
       (-> points
           (mapcar #'second $)
           (remove-duplicates $)
           (sort $ #'<)
-          (points->ranges $)))
+          (points->ranges $))))
     ;(format t "y-grid = ~a~%" y-grid)
 
+    (format t "~%MAKING Z-GRID...~%")
     (var z-grid
+      (time
       (-> points
           (mapcar #'third $)
           (remove-duplicates $)
           (sort $ #'<)
-          (points->ranges $)))
+          (points->ranges $))))
     ;(format t "z-grid = ~a~%" z-grid)
 
+    (format t "~%CALCULATING VOLUME...~%")
     (var volume
+      (time
       (loop for y-range in y-grid sum
         (* (- (second y-range) (first y-range))
            (loop for z-range in z-grid sum
              (* (- (second z-range) (first z-range))
                 (get-x-depth-for-yz-grid planes//yz-plane
                                          (list (first y-range)
-                                               (first z-range))))))))
+                                               (first z-range)))))))))
 
     volume
 
