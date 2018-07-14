@@ -34,42 +34,56 @@
       $)))
 
 
+(defstruct y-segment (start 0 :type fixnum) (end 0 :type fixnum))
+(defstruct z-segment (start 0 :type fixnum) (end 0 :type fixnum))
+(defstruct segment//z-axis (x 0 :type fixnum) (y 0 :type fixnum)
+                           (z-start 0 :type fixnum)
+                           (z-end 0 :type fixnum))
+
 (defun read-testcase ()
   (loop for nil below (read) collect
     (loop for nil below (read) collect (list (read) (read) (read)))))
 
 
-(defun get-x-y-and-z-ranges (plane)
+(defun get-segment (plane)
   (remove-if #'null
     (mapcar
       (lambda (p1 p2)
         (if (or (not (= (first p1) (first p2)))
                 (not (= (second p1) (second p2))))
             nil
-            (list (first p1)
-                  (second p1)
-                  (min (third p1) (third p2))
-                  (max (third p1) (third p2)))))
+            (make-segment//z-axis :x (first p1)
+                                  :y (second p1)
+                                  :z-start (min (third p1) (third p2))
+                                  :z-end (max (third p1) (third p2)))))
       plane
       (cons (first (last plane)) plane))))
 
-(defun yz-grid-in-plane-p (grid plane)
+(defun yz-segment-in-plane-p (y-segment z-segment plane)
   (let ((count 0))
-    (dolist (range (get-x-y-and-z-ranges plane))
-      (when (and (<= (second range) (first grid))
-                 (<= (third range) (second grid))
-                 (> (fourth range) (second grid)))
+    (dolist (segment (get-segment plane))
+      (when (and (<= (segment//z-axis-y segment) (y-segment-start y-segment))
+                 (<= (segment//z-axis-z-start segment)
+                     (z-segment-start z-segment))
+                 (> (segment//z-axis-z-end segment)
+                    (z-segment-start z-segment)))
         (incf count)))
     (oddp count)))
 
-(defun get-planes-including-yz-grid-in (planes//yz-plane grid)
-  (remove-if-not (lambda (plane) (yz-grid-in-plane-p grid plane))
+(defun get-planes-including-yz-segment-in (planes//yz-plane
+                                           y-segment
+                                           z-segment)
+  (remove-if-not (lambda (plane) (yz-segment-in-plane-p y-segment
+                                                        z-segment
+                                                        plane))
                  planes//yz-plane))
 
-(defun get-x-depth-for-yz-grid (planes//yz-plane grid)
-  (let ((planes (get-planes-including-yz-grid-in planes//yz-plane grid)))
+(defun get-x-depth-for-yz-segment (planes//yz-plane y-segment z-segment)
+  (let ((planes (get-planes-including-yz-segment-in planes//yz-plane
+                                                    y-segment
+                                                    z-segment)))
     (unless (evenp (length planes))
-      (error "error in get-x-depth-for-yz-grid"))
+      (error "error in get-x-depth-for-yz-segment"))
     (setq planes (sort planes (lambda (p1 p2) (< (caar p1) (caar p2)))))
     (do* ((rest planes (cddr rest)) (res 0))
          ((null rest) res)
@@ -92,9 +106,6 @@
       (time (remove-if-not #'is-x-constant planes)))
     ;(format t "planes//yz-plane = ~a~%" planes//yz-plane)
 
-    (fun points->ranges (points)
-      (mapcar #'list points (rest points)))
-
     (format t "~%MAKING Y-GRID...~%")
     (var y-grid
       (time
@@ -102,7 +113,9 @@
           (mapcar #'second $)
           (remove-duplicates $)
           (sort $ #'<)
-          (points->ranges $))))
+          (mapcar (lambda (start end) (make-y-segment :start start :end end))
+                  $
+                  (rest $)))))
     ;(format t "y-grid = ~a~%" y-grid)
 
     (format t "~%MAKING Z-GRID...~%")
@@ -112,19 +125,22 @@
           (mapcar #'third $)
           (remove-duplicates $)
           (sort $ #'<)
-          (points->ranges $))))
+          (mapcar (lambda (start end) (make-z-segment :start start :end end))
+                  $
+                  (rest $)))))
     ;(format t "z-grid = ~a~%" z-grid)
 
     (format t "~%CALCULATING VOLUME...~%")
     (var volume
       (time
-      (loop for y-range in y-grid sum
-        (* (- (second y-range) (first y-range))
-           (loop for z-range in z-grid sum
-             (* (- (second z-range) (first z-range))
-                (get-x-depth-for-yz-grid planes//yz-plane
-                                         (list (first y-range)
-                                               (first z-range)))))))))
+      (loop for y-segment in y-grid sum
+        (* (- (y-segment-end y-segment) (y-segment-start y-segment))
+           (loop for z-segment in z-grid sum
+             (* (- (z-segment-end z-segment)
+                   (z-segment-start z-segment))
+                (get-x-depth-for-yz-segment planes//yz-plane
+                                            y-segment
+                                            z-segment)))))))
 
     volume
 
